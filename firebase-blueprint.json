@@ -1,0 +1,140 @@
+{
+  "entities": {
+    "User": {
+      "title": "Private User Data",
+      "description": "Sensitive information about a user, restricted to the owner.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Profile": {
+      "title": "Public User Profile",
+      "description": "Publicly visible information about a user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "username": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "socialLinks": { 
+          "type": "array", 
+          "items": { 
+            "type": "object",
+            "properties": {
+              "platform": { "type": "string" },
+              "url": { "type": "string" }
+            }
+          } 
+        },
+        "bio": { "type": "string" },
+        "onboarded": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "username"]
+    },
+    "Group": {
+      "title": "Group",
+      "description": "A collaboration group with a title, about, and goal.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "about": { "type": "string" },
+        "goal": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "members": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "about", "goal", "ownerId", "members"]
+    },
+    "FeedPost": {
+      "title": "Feed Post",
+      "description": "An AI-generated post about a new group idea.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "content": { "type": "string" },
+        "authorId": { "type": "string" },
+        "authorUsername": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["content", "authorId", "authorUsername"]
+    },
+    "ChatSession": {
+      "title": "Chat Session",
+      "description": "A conversation session with the AI.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title"]
+    },
+    "ChatMessage": {
+      "title": "Chat Message",
+      "description": "A message in an AI chat session.",
+      "type": "object",
+      "properties": {
+        "sessionId": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "model"] },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sessionId", "role", "content"]
+    },
+    "Memory": {
+      "title": "Long-term Memory",
+      "description": "AI's long-term memory about a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "content": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "content"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "Private user data"
+    },
+    "/profiles/{userId}": {
+      "schema": "Profile",
+      "description": "Public user profiles"
+    },
+    "/groups/{groupId}": {
+      "schema": "Group",
+      "description": "Collaboration groups"
+    },
+    "/feed/{postId}": {
+      "schema": "FeedPost",
+      "description": "AI-generated feed posts"
+    },
+    "/chatSessions/{sessionId}": {
+      "schema": "ChatSession",
+      "description": "AI chat sessions"
+    },
+    "/chatSessions/{sessionId}/messages/{messageId}": {
+      "schema": "ChatMessage",
+      "description": "Messages in a chat session"
+    },
+    "/memories/{userId}": {
+      "schema": "Memory",
+      "description": "AI long-term memories"
+    }
+  },
+  "storage": {
+    "/profiles/{userId}/{fileName}": {
+      "description": "Publicly accessible profile images, writable only by the owner.",
+      "access": "Public Read, Owner Write",
+      "constraints": "Image files only, max 5MB"
+    }
+  }
+}
